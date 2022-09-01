@@ -9,14 +9,14 @@ public class User {
 	protected int SSN;
 	
 	//Constructor	
-	public User(int userID, String firstname, String lastname, String username, String password, int sSN) {
+	public User(int userID, String firstname, String lastname, String username, String password, int SSN) {
 		super();
 		this.userID = userID;
 		this.firstname = firstname;
 		this.lastname = lastname;
 		this.username = username;
 		this.password = password;
-		SSN = sSN;
+		this.SSN = SSN;
 	}
 	
 	//Getters and setters
@@ -53,14 +53,8 @@ public class User {
 	public int getSSN() {
 		return SSN;
 	}
-	public void setSSN(int sSN) {
-		SSN = sSN;
-	}
-	
-	//If login is successful, return the user
-	//If unsuccessful, return null
-	static final User login() {
-		return null;
+	public void setSSN(int SSN) {
+		this.SSN = SSN;
 	}
 	
 }
