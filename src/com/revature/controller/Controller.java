@@ -90,16 +90,54 @@ public class Controller {
 		User newUser = userDao.createUser(new User(userDao.getNextUserID(), fname, lname, uname, pass, ssn));
 		if(newUser == null) {
 			System.out.println("Something went wrong, please try again");
-			create();
+			mainMenu();
 		}
 		else {
 			System.out.println("Profile successfully created!");
 			login();
 		}
 	}
+
 	private static void employeeMenu() {
+		System.out.println("Employee Menu");
+		System.out.println("Please select from the following options:");
+		System.out.println("1) Your customer menu");
+		System.out.println("2) Manage users");
+		System.out.println("3) Manage pending users/accounts");
+		System.out.println("4) Log out");
+		if(loggedEmployee.isAdmin()) {
+			System.out.println("5) Actions on all accounts");
+		}
+		int selection = getInt(1, loggedEmployee.isAdmin()?4:3);
+		switch(selection) {
+		case 1:
+			userMenu();
+			break;
+		case 2:
+			manageUsers();
+			break;
+		case 3:
+			managePending();
+			break;
+		case 4:
+			logout();
+			break;
+		case 5:
+			allAccounts();
+			break;
+		}
+	}
+	private static void manageUsers() {
 		
 	}
+	private static void managePending() {
+		
+	}
+	private static void allAccounts() {
+		
+	}
+
+
 	private static void userMenu() {
 		boolean isEmployee = (loggedEmployee != null && loggedEmployee.getUserID() == loggedUser.getUserID());
 		System.out.println("Please select from the following options:");

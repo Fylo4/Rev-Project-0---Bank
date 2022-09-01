@@ -10,5 +10,19 @@ public class Employee extends User{
 		this.employeeID = eID;
 		this.isAdmin = isAdmin;
 	}
+
+
+	public int getEmployeeID() {
+		return employeeID;
+	}
+	public void setEmployeeID(int employeeID) {
+		this.employeeID = employeeID;
+	}
+	public boolean isAdmin() {
+		return isAdmin;
+	}
+	public void setAdmin(boolean isAdmin) {
+		this.isAdmin = isAdmin;
+	}
 	
 }
