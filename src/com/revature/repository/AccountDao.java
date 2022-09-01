@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.revature.models.Account;
+import com.revature.models.AccountHolder;
 
 public class AccountDao {
 	public static List<Account> accountData;
@@ -29,6 +30,13 @@ public class AccountDao {
 		for(int a = 0; a < accountData.size(); a ++) {
 			if(accountData.get(a).getAccountID() == accountID) {
 				accountData.remove(a);
+				//Delete all accountHolders that correspond to this account
+				for(int b = 0; b < AccountHolderDao.accountHolderData.size(); b ++) {
+					AccountHolder ah = AccountHolderDao.accountHolderData.get(b);
+					if(ah.getAccountID() == accountID) {
+						AccountHolderDao.accountHolderData.remove(b);
+					}
+				}
 				return true;
 			}
 		}
