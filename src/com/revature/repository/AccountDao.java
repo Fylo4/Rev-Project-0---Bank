@@ -24,4 +24,23 @@ public class AccountDao {
 		}
 		return null;
 	}
+	
+	public static boolean deleteAccount(int accountID) {
+		for(int a = 0; a < accountData.size(); a ++) {
+			if(accountData.get(a).getAccountID() == accountID) {
+				accountData.remove(a);
+				return true;
+			}
+		}
+		return false;
+	}
+	public static boolean renameAccount(int accountID, String newName) {
+		for(Account a : accountData) {
+			if(a.getAccountID() == accountID) {
+				a.setName(newName);
+				return true;
+			}
+		}
+		return false;
+	}
 }

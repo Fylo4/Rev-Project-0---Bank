@@ -9,6 +9,7 @@ import com.revature.models.Account;
 import com.revature.models.AccountHolder;
 import com.revature.models.Employee;
 import com.revature.models.User;
+import com.revature.repository.AccountDao;
 import com.revature.repository.AccountHolderDao;
 import com.revature.repository.UserDao;
 
@@ -174,11 +175,9 @@ public class Controller {
 		switch(selection) {
 		case 1:
 			showBalances();
-			userMenu();
 			break;
 		case 2:
 			showAccountDetails();
-			userMenu();
 			break;
 		case 3:
 			deposit();
@@ -271,7 +270,82 @@ public class Controller {
 		userMenu();
 	}
 	private static void manageAccounts() {
+		System.out.println("Please select from the following options:");
+		System.out.println("1) Open new account");
+		System.out.println("2) Join joint account");
+		System.out.println("3) Rename account");
+		System.out.println("4) Delete account");
+		int selection = getInt(1, 4);
+		switch(selection) {
+		case 1:
+			openAccount();
+			break;
+		case 2:
+			joinAccount();
+			break;
+		case 3:
+			renameAccount();
+			break;
+		case 4:
+			deleteAccount();
+			break;
+		}
+	}
+	private static void openAccount() {
 		
+	}
+	private static void joinAccount(){
+		
+	}
+	private static void renameAccount() {
+		List<Account> allAccounts = AccountHolderDao.getAccountsByUser(loggedUser.getUserID());
+		System.out.println("Rename Account");
+		System.out.println("Select which account to delete:");
+		System.out.println("0) Exit without renaming");
+		int index = 1;
+		for(Account a : allAccounts) {
+			System.out.println(index+") "+a.getName()+" - $"+a.getBalance());
+			index ++;
+		}
+		int selection = getInt(0, index-1);
+		if(selection == 0) {
+			userMenu();
+		}else {
+			System.out.println("Rename to: ");
+			String newName = scanner.nextLine();
+			AccountDao.renameAccount(allAccounts.get(selection-1).getAccountID(), newName);
+		}
+	}
+	private static void deleteAccount() {
+		List<Account> allAccounts = AccountHolderDao.getAccountsByUser(loggedUser.getUserID());
+		System.out.println("Delete Account");
+		System.out.println("Select which account to delete:");
+		System.out.println("0) Exit without deleting");
+		int index = 1;
+		for(Account a : allAccounts) {
+			System.out.println(index+") "+a.getName()+" - $"+a.getBalance());
+			index ++;
+		}
+		int selection = getInt(0, index-1);
+		if(selection == 0) {
+			userMenu();
+		}
+		else {
+			System.out.println("Type 'delete' (without quotes) to confirm");
+			String input = scanner.nextLine();
+			if(input.equals("delete")) {
+				if(AccountDao.deleteAccount(allAccounts.get(selection-1).getAccountID())) {
+					System.out.println("Account deleted successfully");
+				}
+				else {
+					System.out.println("Failed to delete the account");
+				}
+			}
+			else {
+				System.out.println("Deletion cancelled");
+			}
+		}
+		userMenu();
 	}
 	private static void logout() {
 		loggedUser = null;
