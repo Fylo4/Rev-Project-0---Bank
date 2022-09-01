@@ -16,7 +16,6 @@ public class Controller {
 	private static User loggedUser = null;
 	private static Employee loggedEmployee = null;
 	private static Scanner scanner = new Scanner(System.in);
-	private static UserDao userDao = new UserDao();
 	private static final DecimalFormat df = new DecimalFormat("0.00"); //For showing balances
 	
 	private static int getInt(int min, int max) {
@@ -71,7 +70,7 @@ public class Controller {
 		System.out.println("Password: ");
 		String password = scanner.nextLine();
 		
-		loggedUser = userDao.getUser(username, password);
+		loggedUser = UserDao.getUser(username, password);
 		if(loggedUser != null) {
 			loggedEmployee = null; //getEmployee()
 			if(loggedEmployee != null) {
@@ -96,7 +95,7 @@ public class Controller {
 		while(true){
 			System.out.println("Profile username: ");
 			uname = scanner.nextLine();
-			if(userDao.usernameAvailable(uname)) {
+			if(UserDao.usernameAvailable(uname)) {
 				break;
 			}
 			else {
@@ -107,7 +106,7 @@ public class Controller {
 		pass = scanner.nextLine();
 		System.out.println("SSN: ");
 		int ssn = getInt(0, 999_99_9999);
-		User newUser = userDao.createUser(new User(userDao.getNextUserID(), fname, lname, uname, pass, ssn));
+		User newUser = UserDao.createUser(new User(UserDao.getNextUserID(), fname, lname, uname, pass, ssn));
 		if(newUser == null) {
 			System.out.println("Something went wrong, please try again");
 			mainMenu();
