@@ -1,10 +1,14 @@
 package com.revature.controller;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
+import com.revature.models.Account;
+import com.revature.models.AccountHolder;
 import com.revature.models.Employee;
 import com.revature.models.User;
+import com.revature.repository.AccountHolderDao;
 import com.revature.repository.UserDao;
 
 public class Controller {
@@ -26,6 +30,20 @@ public class Controller {
 			scanner.nextLine();
 		}
 		return choice;
+	}
+	private static double getDouble(double min, double max) {
+		double ret = min-1;
+		while(ret < min || ret > max) {
+			try {
+				ret = scanner.nextDouble();
+			} catch(NoSuchElementException e) {
+			}
+			if(ret < min || ret > max) {
+				System.out.println("Input not recognized, please try again");
+			}
+			scanner.nextLine();
+		}
+		return ret;
 	}
 	
 	
@@ -183,25 +201,81 @@ public class Controller {
 		
 	}
 	private static void showBalances() {
-		
+		System.out.println("Displaying all balances:");
+		double total = 0;
+		for(Account a : AccountHolderDao.getAccountsByUser(loggedUser.getUserID())) {
+			System.out.println("Name: "+a.getName() + " Balance: $"+a.getBalance());
+			total += a.getBalance();
+		}
+		System.out.println("Total balance: "+total);
+		userMenu();
 	}
 	private static void showAccountDetails() {
-		
+		System.out.println("Displaying all account details:");
+		for(Account a : AccountHolderDao.getAccountsByUser(loggedUser.getUserID())) {
+			System.out.println("Name: "+a.getName() + " Type: "+a.getType()+" Balance: $"+a.getBalance()+" State: "+a.getState());
+		}
+		userMenu();
 	}
 	private static void deposit() {
-		
+		List<Account> allAccounts = AccountHolderDao.getAccountsByUser(loggedUser.getUserID());
+		System.out.println("Deposit");
+		System.out.println("Select which account to deposit into:");
+		int index = 1;
+		for(Account a : allAccounts) {
+			System.out.println(index+") "+a.getName()+" - $"+a.getBalance());
+			index ++;
+		}
+		int selection = getInt(1, index-1);
+		System.out.println("How much money to deposit? ");
+		double amount = getDouble(0.01, Double.MAX_VALUE);
+		allAccounts.get(selection-1).changeBalance(amount);
+		System.out.println("Deposit successful");
+		userMenu();
 	}
 	private static void withdraw() {
-		
+		List<Account> allAccounts = AccountHolderDao.getAccountsByUser(loggedUser.getUserID());
+		System.out.println("Withdraw");
+		System.out.println("Select which account to withdraw from:");
+		int index = 1;
+		for(Account a : allAccounts) {
+			System.out.println(index+") "+a.getName()+" - $"+a.getBalance());
+			index ++;
+		}
+		int selection = getInt(1, index-1);
+		System.out.println("How much money to withdraw? ");
+		double amount = getDouble(0.01, allAccounts.get(selection-1).getBalance());
+		allAccounts.get(selection-1).changeBalance(-amount);
+		System.out.println("Withdraw successful");
+		userMenu();
 	}
 	private static void transfer() {
-		
+		List<Account> allAccounts = AccountHolderDao.getAccountsByUser(loggedUser.getUserID());
+		System.out.println("Transfer");
+		System.out.println("Accounts:");
+		int index = 1;
+		for(Account a : allAccounts) {
+			System.out.println(index+") "+a.getName()+" - $"+a.getBalance());
+			index ++;
+		}
+		System.out.println("Move money from account #: ");
+		int acc_from = getInt(1, index-1);
+		System.out.println("To account #: ");
+		int acc_to = getInt(1, index-1);
+		System.out.println("Amount of money to transfer: ");
+		double amount = getDouble(0.01, allAccounts.get(acc_from).getBalance());
+		allAccounts.get(acc_from).changeBalance(-amount);
+		allAccounts.get(acc_to).changeBalance(amount);
+		System.out.println("Transfer successful");
+		userMenu();
 	}
 	private static void manageAccounts() {
 		
 	}
 	private static void logout() {
-		
+		loggedUser = null;
+		loggedEmployee = null;
+		mainMenu();
 	}
 	public static void main(String[] args) {
 		mainMenu();

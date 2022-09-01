@@ -59,4 +59,8 @@ public class Account {
 		this.state = state;
 	}
 	
+	public void changeBalance(double amount) {
+		this.balance += amount;
+	}
+	
 }
