@@ -1,5 +1,6 @@
 package com.revature.controller;
 
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
@@ -16,6 +17,7 @@ public class Controller {
 	private static Employee loggedEmployee = null;
 	private static Scanner scanner = new Scanner(System.in);
 	private static UserDao userDao = new UserDao();
+	private static final DecimalFormat df = new DecimalFormat("0.00"); //For showing balances
 	
 	private static int getInt(int min, int max) {
 		int choice = min-1;
@@ -204,16 +206,16 @@ public class Controller {
 		System.out.println("Displaying all balances:");
 		double total = 0;
 		for(Account a : AccountHolderDao.getAccountsByUser(loggedUser.getUserID())) {
-			System.out.println("Name: "+a.getName() + " Balance: $"+a.getBalance());
+			System.out.println("Name: "+a.getName() + " Balance: $"+df.format(a.getBalance()));
 			total += a.getBalance();
 		}
-		System.out.println("Total balance: "+total);
+		System.out.println("Total balance: $"+df.format(total));
 		userMenu();
 	}
 	private static void showAccountDetails() {
 		System.out.println("Displaying all account details:");
 		for(Account a : AccountHolderDao.getAccountsByUser(loggedUser.getUserID())) {
-			System.out.println("Name: "+a.getName() + " Type: "+a.getType()+" Balance: $"+a.getBalance()+" State: "+a.getState());
+			System.out.println("Name: "+a.getName() + " Type: "+a.getType()+" Balance: $"+df.format(a.getBalance())+" State: "+a.getState());
 		}
 		userMenu();
 	}
@@ -239,7 +241,7 @@ public class Controller {
 		System.out.println("Select which account to withdraw from:");
 		int index = 1;
 		for(Account a : allAccounts) {
-			System.out.println(index+") "+a.getName()+" - $"+a.getBalance());
+			System.out.println(index+") "+a.getName()+" - $"+df.format(a.getBalance()));
 			index ++;
 		}
 		int selection = getInt(1, index-1);
@@ -255,7 +257,7 @@ public class Controller {
 		System.out.println("Accounts:");
 		int index = 1;
 		for(Account a : allAccounts) {
-			System.out.println(index+") "+a.getName()+" - $"+a.getBalance());
+			System.out.println(index+") "+a.getName()+" - $"+df.format(a.getBalance()));
 			index ++;
 		}
 		System.out.println("Move money from account #: ");
@@ -263,9 +265,9 @@ public class Controller {
 		System.out.println("To account #: ");
 		int acc_to = getInt(1, index-1);
 		System.out.println("Amount of money to transfer: ");
-		double amount = getDouble(0.01, allAccounts.get(acc_from).getBalance());
-		allAccounts.get(acc_from).changeBalance(-amount);
-		allAccounts.get(acc_to).changeBalance(amount);
+		double amount = getDouble(0.01, allAccounts.get(acc_from-1).getBalance());
+		allAccounts.get(acc_from-1).changeBalance(-amount);
+		allAccounts.get(acc_to-11).changeBalance(amount);
 		System.out.println("Transfer successful");
 		userMenu();
 	}

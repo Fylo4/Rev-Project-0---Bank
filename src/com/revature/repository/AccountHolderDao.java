@@ -9,7 +9,8 @@ import com.revature.models.AccountHolder;
 public class AccountHolderDao {
 	public static List<AccountHolder> accountHolderData;
 	
-	public AccountHolderDao() {
+	static{
+		accountHolderData = new LinkedList<>();
 		accountHolderData.add(new AccountHolder(0, 0)); //Account, user
 		accountHolderData.add(new AccountHolder(1, 1));
 		accountHolderData.add(new AccountHolder(2, 1));
