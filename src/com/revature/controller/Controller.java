@@ -6,7 +6,6 @@ import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 import com.revature.models.Account;
-import com.revature.models.AccountHolder;
 import com.revature.models.Employee;
 import com.revature.models.User;
 import com.revature.repository.AccountDao;
@@ -160,6 +159,7 @@ public class Controller {
 
 	private static void userMenu() {
 		boolean isEmployee = (loggedEmployee != null && loggedEmployee.getUserID() == loggedUser.getUserID());
+		System.out.println(loggedUser.getFirstname());
 		System.out.println("Please select from the following options:");
 		System.out.println("1) See balances");
 		System.out.println("2) See account details");
