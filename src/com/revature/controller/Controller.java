@@ -10,6 +10,7 @@ import com.revature.models.Employee;
 import com.revature.models.User;
 import com.revature.repository.AccountDao;
 import com.revature.repository.AccountHolderDao;
+import com.revature.repository.EmployeeDao;
 import com.revature.repository.UserDao;
 
 public class Controller {
@@ -53,7 +54,8 @@ public class Controller {
 		System.out.println("Please select from the following options:");
 		System.out.println("1) Log in");
 		System.out.println("2) Create profile");
-		int choice = getInt(1, 2);
+		System.out.println("3) Quit application");
+		int choice = getInt(1, 3);
 		switch(choice) {
 		case 1:
 			login();
@@ -61,6 +63,7 @@ public class Controller {
 		case 2:
 			create();
 			break;
+		//3 does nothing, which ends the program
 		}
 	}
 	private static void login() {
@@ -72,7 +75,7 @@ public class Controller {
 		
 		loggedUser = UserDao.getUser(username, password);
 		if(loggedUser != null) {
-			loggedEmployee = null; //getEmployee()
+			loggedEmployee = EmployeeDao.getEmployee(loggedUser.getUserID());
 			if(loggedEmployee != null) {
 				employeeMenu();
 			}
@@ -106,8 +109,8 @@ public class Controller {
 		pass = scanner.nextLine();
 		System.out.println("SSN: ");
 		int ssn = getInt(0, 999_99_9999);
-		User newUser = UserDao.createUser(new User(UserDao.getNextUserID(), fname, lname, uname, pass, ssn));
-		if(newUser == null) {
+		boolean successful = UserDao.createUser(new User(0, fname, lname, uname, pass, ssn));
+		if(!successful) {
 			System.out.println("Something went wrong, please try again");
 			mainMenu();
 		}
@@ -147,7 +150,52 @@ public class Controller {
 		}
 	}
 	private static void manageUsers() {
+		System.out.println("Manage users");
+		System.out.println("1) Find users by name");
+		System.out.println("2) Find users by ID");
+		System.out.println("3) Cancel");
+		int selection = getInt(1, 3);
+		switch(selection) {
+		case 1:
+			manageUsersByName();
+			break;
+		case 2:
+			manageUsersByID();
+			break;
+		case 3:
+			employeeMenu();
+			break;
+		}
 		
+	}
+	private static void manageUsersByName() {
+		System.out.println("First name: ");
+		String fname = scanner.nextLine();
+		System.out.println("Last name: ");
+		String lname = scanner.nextLine();
+		User user = UserDao.findByName(fname, lname);
+		if(user == null) {
+			System.out.println("No users found by that name");
+			manageUsers();
+		}
+		else {
+			manageUsers2(user);
+		}
+	}
+	private static void manageUsersByID() {
+		System.out.println("User ID: ");
+		int id = scanner.nextInt();
+		User user = UserDao.findByID(id);
+		if(user == null) {
+			System.out.println("No users found with that ID");
+			manageUsers();
+		}
+		else {
+			manageUsers2(user);
+		}
+	}
+	private static void manageUsers2(User user) {
+		 
 	}
 	private static void managePending() {
 		
@@ -159,7 +207,7 @@ public class Controller {
 
 	private static void userMenu() {
 		boolean isEmployee = (loggedEmployee != null && loggedEmployee.getUserID() == loggedUser.getUserID());
-		System.out.println(loggedUser.getFirstname());
+		System.out.println("Hello "+loggedUser.getFirstname()+" "+loggedUser.getLastname());
 		System.out.println("Please select from the following options:");
 		System.out.println("1) See balances");
 		System.out.println("2) See account details");
@@ -203,17 +251,28 @@ public class Controller {
 	private static void showBalances() {
 		System.out.println("Displaying all balances:");
 		double total = 0;
+		boolean accountsFound = false;
 		for(Account a : AccountHolderDao.getAccountsByUser(loggedUser.getUserID())) {
 			System.out.println("Name: "+a.getName() + " Balance: $"+df.format(a.getBalance()));
 			total += a.getBalance();
+			accountsFound = true;
 		}
-		System.out.println("Total balance: $"+df.format(total));
+		if(accountsFound) {
+			System.out.println("Total balance: $"+df.format(total));
+		}else {
+			System.out.println("No accounts found on this profile");
+		}
 		userMenu();
 	}
 	private static void showAccountDetails() {
 		System.out.println("Displaying all account details:");
+		boolean accountsFound = false;
 		for(Account a : AccountHolderDao.getAccountsByUser(loggedUser.getUserID())) {
 			System.out.println("Name: "+a.getName() + " Type: "+a.getType()+" Balance: $"+df.format(a.getBalance())+" State: "+a.getState());
+			accountsFound = true;
+		}
+		if(!accountsFound) {
+			System.out.println("No accounts found in this profile");
 		}
 		userMenu();
 	}

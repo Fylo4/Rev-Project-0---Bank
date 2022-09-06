@@ -26,27 +26,18 @@ public class AccountHolderDao {
 		accountHolderData.add(new AccountHolder(3, 1));
 	}
 	
-	/*public static List<Account> getAccountsByUser(int userID) {
-		List<Account> ret = new LinkedList<Account>();
-		for(AccountHolder a : accountHolderData) {
-			if(a.getUserID() == userID){
-				ret.add(AccountDao.getAccountById(a.getAccountID()));
-			}
-		}
-		return ret;
-	}*/
 	public static List<Account> getAccountsByUser(int userID){
 		
 		List<Account> ret = new LinkedList<>();
 		
 		try(Connection connection = DriverManager.getConnection(url, username, password);
-				Statement statement = connection.createStatement();
-			    ResultSet set = statement.executeQuery("SELECT * FROM accountholders INNER JOIN accounts ON accountholders.accountid = accounts.accountid WHERE userid = "+userID+";");
-			){
-				while(set.next()) {
-					ret.add(new Account(set.getInt(1), set.getString(4), set.getDouble(5), set.getString(6), set.getString(7)));
-				}
-			} catch (SQLException e1) {
+			Statement statement = connection.createStatement();
+		    ResultSet set = statement.executeQuery("SELECT * FROM accountholders INNER JOIN accounts ON accountholders.accountid = accounts.accountid WHERE userid = "+userID+";");
+		){
+			while(set.next()) {
+				ret.add(new Account(set.getInt(1), set.getString(4), set.getDouble(5), set.getString(6), set.getString(7)));
+			}
+		} catch (SQLException e1) {
 		}
 		return ret;
 	}
