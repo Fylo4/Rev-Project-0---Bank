@@ -9,16 +9,14 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.revature.models.Account;
+import com.revature.services.SQLServices;
 
 public class AccountHolderDao {
-	private static final String url = "jdbc:postgresql://p0-bank-database.cijrbngpbjo5.us-east-2.rds.amazonaws.com:5432/postgres";
-	private static final String username = "postgres";
-	private static final String password = "postgres";
 	
 	public static List<Account> getAccountsByUser(int userID){
 		List<Account> ret = new LinkedList<>();
 		
-		try(Connection connection = DriverManager.getConnection(url, username, password);
+		try(Connection connection = DriverManager.getConnection(SQLServices.url, SQLServices.username, SQLServices.password);
 			Statement statement = connection.createStatement();
 		    ResultSet set = statement.executeQuery("SELECT * FROM accountholders INNER JOIN accounts ON accountholders.accountid = accounts.accountid WHERE userid = "+userID+";");
 		){
@@ -32,7 +30,7 @@ public class AccountHolderDao {
 	public static boolean createHolder(int accountID, int userID) {
 		String command = "INSERT INTO accountHolders VALUES ("+accountID+", "+userID+");";
 
-		try(Connection connection = DriverManager.getConnection(url, username, password);){
+		try(Connection connection = DriverManager.getConnection(SQLServices.url, SQLServices.username, SQLServices.password);){
 			connection.createStatement().execute(command);
 		} catch (SQLException e1) {
 			e1.printStackTrace();

@@ -5,8 +5,11 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+
 import com.revature.models.Account;
-import com.revature.models.AccountHolder;
 import com.revature.models.Employee;
 import com.revature.models.User;
 import com.revature.repository.AccountDao;
@@ -17,8 +20,9 @@ import com.revature.repository.UserDao;
 public class Controller {
 	private static User loggedUser = null;
 	private static Employee loggedEmployee = null;
-	private static Scanner scanner = new Scanner(System.in);
+	private static final Scanner scanner = new Scanner(System.in);
 	private static final DecimalFormat df = new DecimalFormat("0.00"); //For showing balances
+	private static Logger fileLogger;
 	
 	private static int getInt(int min, int max) {
 		int choice = min-1;
@@ -51,6 +55,7 @@ public class Controller {
 	
 	
 	private static void mainMenu() {
+		fileLogger.debug("Entering main menu");
 		System.out.println("BankCo Banking Application");
 		System.out.println("Please select from the following options:");
 		System.out.println("1) Log in");
@@ -68,6 +73,7 @@ public class Controller {
 		}
 	}
 	private static void login() {
+		fileLogger.debug("Entering login page");
 		System.out.println("Login");
 		System.out.println("Username: ");
 		String username = scanner.nextLine();
@@ -90,6 +96,7 @@ public class Controller {
 		}
 	}
 	private static void create() {
+		fileLogger.debug("Creating profile");
 		String fname, lname, uname, pass;
 		System.out.println("Create a new profile");
 		System.out.println("Enter your first name: ");
@@ -121,6 +128,7 @@ public class Controller {
 		}
 	}
 	private static void employeeMenu() {
+		fileLogger.debug("Entering employee menu");
 		System.out.println("Employee Menu");
 		System.out.println("Please select from the following options:");
 		System.out.println("1) Your customer menu");
@@ -150,6 +158,7 @@ public class Controller {
 		}
 	}
 	private static void manageUsers() {
+		fileLogger.debug("Entering manageUsers menu");
 		System.out.println("Manage users");
 		System.out.println("1) Find users by name");
 		System.out.println("2) Find users by ID");
@@ -169,6 +178,7 @@ public class Controller {
 		
 	}
 	private static void manageUsersByName() {
+		fileLogger.debug("Searching for users by name");
 		System.out.println("First name: ");
 		String fname = scanner.nextLine();
 		System.out.println("Last name: ");
@@ -183,6 +193,7 @@ public class Controller {
 		}
 	}
 	private static void manageUsersByID() {
+		fileLogger.debug("Searching for users by ID");
 		System.out.println("User ID: ");
 		int id = scanner.nextInt();
 		User user = UserDao.findByID(id);
@@ -195,6 +206,7 @@ public class Controller {
 		}
 	}
 	private static void manageUsers2(User user) {
+		fileLogger.debug("Entering manageUsers2 menu");
 		System.out.println("1) View accounts");
 		System.out.println("2) View profile info");
 		System.out.println("3) Return");
@@ -223,6 +235,7 @@ public class Controller {
 		}
 	}
 	private static void viewUserAccounts(User user) {
+		fileLogger.debug("Viewing user accounts");
 		System.out.println("Displaying all account details:");
 		boolean accountsFound = false;
 		for(Account a : AccountHolderDao.getAccountsByUser(user.getUserID())) {
@@ -235,6 +248,7 @@ public class Controller {
 		manageUsers2(user);
 	}
 	private static void viewUserProfile(User user) {
+		fileLogger.debug("Viewing user profile");
 		System.out.println("UserID: "+user.getUserID());
 		System.out.println("Name: "+user.getFirstname()+" "+user.getLastname());
 		System.out.println("Username: "+user.getUsername());
@@ -247,6 +261,7 @@ public class Controller {
 		manageUsers2(user);
 	}
 	private static void changeUserAccount(User user) {
+		fileLogger.debug("Entering changeUserAccount menu");
 		//Pick the account to modify
 		System.out.println("Select an account to modify:");
 		List<Account> myAccounts = AccountHolderDao.getAccountsByUser(user.getUserID());
@@ -308,6 +323,7 @@ public class Controller {
 		manageUsers2(user);
 	}
 	private static void changeUserProfile(User user) {
+		fileLogger.debug("Entering changeUserProfile menu");
 		System.out.println("How do you want to modify this profile?");
 		System.out.println("1) Change name");
 		System.out.println("2) Change username");
@@ -355,6 +371,7 @@ public class Controller {
 		manageUsers2(user);
 	}
 	private static void managePending() {
+		fileLogger.debug("Entering Employee managePending menu");
 		//Open or close pending accounts and accountHolders
 		//Actually I don't need to manage pending holders, so this menu never shows up
 		System.out.println("1) Pending new accounts");
@@ -374,6 +391,7 @@ public class Controller {
 		}
 	}
 	private static void pendingAccounts() {
+		fileLogger.debug("Entering Employee pendingAccounts menu");
 		List<Account> pending = AccountDao.getPendingAccounts();
 		if(pending != null) {
 			System.out.println("0) Return");
@@ -399,6 +417,7 @@ public class Controller {
 		}
 	}
 	private static void allAccounts() {
+		fileLogger.debug("Entering Admin allAccounts menu");
 		System.out.println("1) Deposit to all accounts");
 		System.out.println("2) Withdraw from all accounts");
 		int selection = getInt(1, 2);
@@ -411,6 +430,7 @@ public class Controller {
 	}
 
 	private static void userMenu() {
+		fileLogger.debug("Entering user menu");
 		boolean isEmployee = (loggedEmployee != null && loggedEmployee.getUserID() == loggedUser.getUserID());
 		System.out.println("Hello "+loggedUser.getFirstname()+" "+loggedUser.getLastname());
 		System.out.println("Please select from the following options:");
@@ -454,6 +474,7 @@ public class Controller {
 		
 	}
 	private static void showBalances() {
+		fileLogger.debug("Showing balances");
 		System.out.println("Displaying all balances:");
 		double total = 0;
 		boolean accountsFound = false;
@@ -470,6 +491,7 @@ public class Controller {
 		userMenu();
 	}
 	private static void showAccountDetails() {
+		fileLogger.debug("Showing account details");
 		System.out.println("Displaying all account details:");
 		boolean accountsFound = false;
 		for(Account a : AccountHolderDao.getAccountsByUser(loggedUser.getUserID())) {
@@ -482,6 +504,7 @@ public class Controller {
 		userMenu();
 	}
 	private static void deposit() {
+		fileLogger.debug("Entering deposit menu");
 		List<Account> allAccounts = AccountHolderDao.getAccountsByUser(loggedUser.getUserID());
 		System.out.println("Select which account to deposit into:");
 		int index = 1;
@@ -498,6 +521,7 @@ public class Controller {
 		userMenu();
 	}
 	private static void withdraw() {
+		fileLogger.debug("Entering withdraw menu");
 		List<Account> allAccounts = AccountHolderDao.getAccountsByUser(loggedUser.getUserID());
 		System.out.println("Select which account to withdraw from:");
 		int index = 1;
@@ -514,6 +538,7 @@ public class Controller {
 		userMenu();
 	}
 	private static void transfer() {
+		fileLogger.debug("Entering transfer menu");
 		List<Account> allAccounts = AccountHolderDao.getAccountsByUser(loggedUser.getUserID());
 		System.out.println("Transfer");
 		System.out.println("Accounts:");
@@ -536,6 +561,7 @@ public class Controller {
 		userMenu();
 	}
 	private static void manageAccounts() {
+		fileLogger.debug("Entering manageAccount menu");
 		System.out.println("Please select from the following options:");
 		System.out.println("1) Open new account");
 		System.out.println("2) Join joint account");
@@ -558,6 +584,7 @@ public class Controller {
 		}
 	}
 	private static void openAccount() {
+		fileLogger.debug("Entering openAccount menu");
 		System.out.println("Select account type:");
 		System.out.println("1) checking");
 		System.out.println("2) savings");
@@ -576,6 +603,7 @@ public class Controller {
 		userMenu();
 	}
 	private static void renameAccount() {
+		fileLogger.debug("Entering renameAccount menu");
 		List<Account> allAccounts = AccountHolderDao.getAccountsByUser(loggedUser.getUserID());
 		System.out.println("Rename Account");
 		System.out.println("Select which account to rename:");
@@ -602,6 +630,7 @@ public class Controller {
 		userMenu();
 	}
 	private static void deleteAccount() {
+		fileLogger.debug("Entering deleteAccount menu");
 		List<Account> allAccounts = AccountHolderDao.getAccountsByUser(loggedUser.getUserID());
 		System.out.println("Delete Account");
 		System.out.println("Select which account to delete:");
@@ -633,11 +662,13 @@ public class Controller {
 		userMenu();
 	}
 	private static void logout() {
+		fileLogger.debug("Logging out");
 		loggedUser = null;
 		loggedEmployee = null;
 		mainMenu();
 	}
 	public static void main(String[] args) {
+		fileLogger = LoggerFactory.getLogger("fileLogger");
 		mainMenu();
 	}
 }

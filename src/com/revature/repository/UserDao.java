@@ -7,17 +7,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import com.revature.models.User;
+import com.revature.services.SQLServices;
 
 public class UserDao {
-	private static final String url = "jdbc:postgresql://p0-bank-database.cijrbngpbjo5.us-east-2.rds.amazonaws.com:5432/postgres";
-	private static final String un = "postgres";
-	private static final String pass = "postgres";
-	
-	
 	public static User getUser(String username, String password) {
 		User user = null;
 		
-		try(Connection connection = DriverManager.getConnection(url, un, pass);
+		try(Connection connection = DriverManager.getConnection(SQLServices.url, SQLServices.username, SQLServices.password);
 			Statement statement = connection.createStatement();
 		    ResultSet set = statement.executeQuery("SELECT * FROM users WHERE username = '"+username+"';");
 		){
@@ -42,8 +38,8 @@ public class UserDao {
 	public static boolean createUser(User newUser) {
 		String command = "INSERT INTO users(firstname, lastname, username, password, ssn) VALUES ('"+newUser.getFirstname()+"', '"+newUser.getLastname()+"', '"+newUser.getUsername()+"', '"+newUser.getPassword()+"', "+newUser.getSSN()+");";
 		//System.out.println(command);
-		
-		try(Connection connection = DriverManager.getConnection(url, un, pass);){
+
+		try(Connection connection = DriverManager.getConnection(SQLServices.url, SQLServices.username, SQLServices.password);){
 			connection.createStatement().execute(command);
 		} catch (SQLException e1) {
 			e1.printStackTrace();
@@ -54,8 +50,8 @@ public class UserDao {
 	}
 	public static boolean updateUser(int userID, User updatedUser) {
 		String command = "UPDATE users SET firstname = '" + updatedUser.getFirstname() + "', lastname = '" + updatedUser.getLastname() + "', username = '"+updatedUser.getUsername()+"', password = '"+updatedUser.getPassword()+"', SSN = "+updatedUser.getSSN()+" WHERE userID = "+userID+";";
-		
-		try(Connection connection = DriverManager.getConnection(url, un, pass);){
+
+		try(Connection connection = DriverManager.getConnection(SQLServices.url, SQLServices.username, SQLServices.password);){
 			connection.createStatement().execute(command);
 		} catch (SQLException e1) {
 			e1.printStackTrace();
@@ -66,8 +62,8 @@ public class UserDao {
 	}
 	public static boolean deleteUser(User deletedUser) {
 		String command = "DELETE FROM users WHERE userID = "+deletedUser.getUserID()+";";
-		
-		try(Connection connection = DriverManager.getConnection(url, un, pass);){
+
+		try(Connection connection = DriverManager.getConnection(SQLServices.url, SQLServices.username, SQLServices.password);){
 			connection.createStatement().execute(command);
 		} catch (SQLException e1) {
 			e1.printStackTrace();
@@ -77,7 +73,7 @@ public class UserDao {
 		return true;
 	}
 	public static boolean usernameAvailable(String username) {
-		try(Connection connection = DriverManager.getConnection(url, un, pass);
+		try(Connection connection = DriverManager.getConnection(SQLServices.url, SQLServices.username, SQLServices.password);
 				Statement statement = connection.createStatement();
 			    ResultSet set = statement.executeQuery("SELECT * FROM users WHERE username = '"+username+"';");
 			){
@@ -90,7 +86,7 @@ public class UserDao {
 		return true;
 	}
 	public static User findByName(String fname, String lname) {
-		try(Connection connection = DriverManager.getConnection(url, un, pass);
+		try(Connection connection = DriverManager.getConnection(SQLServices.url, SQLServices.username, SQLServices.password);
 			Statement statement = connection.createStatement();
 		    ResultSet set = statement.executeQuery("SELECT * FROM users WHERE firstname = '"+fname+"' AND lastname = '"+lname+"';");
 		){
@@ -102,7 +98,7 @@ public class UserDao {
 		return null;
 	}
 	public static User findByID(int id) {
-		try(Connection connection = DriverManager.getConnection(url, un, pass);
+		try(Connection connection = DriverManager.getConnection(SQLServices.url, SQLServices.username, SQLServices.password);
 			Statement statement = connection.createStatement();
 		    ResultSet set = statement.executeQuery("SELECT * FROM users WHERE userid = "+id+";");
 		){
