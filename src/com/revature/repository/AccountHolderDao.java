@@ -9,22 +9,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.revature.models.Account;
-import com.revature.models.AccountHolder;
 
 public class AccountHolderDao {
 	private static final String url = "jdbc:postgresql://p0-bank-database.cijrbngpbjo5.us-east-2.rds.amazonaws.com:5432/postgres";
 	private static final String username = "postgres";
 	private static final String password = "postgres";
-	
-	public static List<AccountHolder> accountHolderData;
-	
-	static{
-		accountHolderData = new LinkedList<>();
-		accountHolderData.add(new AccountHolder(0, 0)); //Account, user
-		accountHolderData.add(new AccountHolder(1, 1));
-		accountHolderData.add(new AccountHolder(2, 1));
-		accountHolderData.add(new AccountHolder(3, 1));
-	}
 	
 	public static List<Account> getAccountsByUser(int userID){
 		List<Account> ret = new LinkedList<>();

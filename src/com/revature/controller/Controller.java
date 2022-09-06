@@ -591,7 +591,8 @@ public class Controller {
 		}else {
 			System.out.println("Rename to: ");
 			String newName = scanner.nextLine();
-			if(AccountDao.renameAccount(allAccounts.get(selection-1).getAccountID(), newName)) {
+			allAccounts.get(selection-1).setName(newName);
+			if(AccountDao.updateAccount(allAccounts.get(selection-1).getAccountID(), allAccounts.get(selection-1))) {
 				System.out.println("Rename successful");
 			}
 			else {

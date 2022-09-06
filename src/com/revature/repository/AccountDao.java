@@ -1,68 +1,83 @@
 package com.revature.repository;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
 
 import com.revature.models.Account;
-import com.revature.models.AccountHolder;
 
 public class AccountDao {
-	public static List<Account> accountData;
-	
-	static{
-		accountData = new LinkedList<Account>();
-		accountData.add(new Account(0, "checking", 10.99, "u1 check", "open"));
-		accountData.add(new Account(1, "checking", 10.99, "u2 check", "open"));
-		accountData.add(new Account(2, "savings", 10.99, "u2 save", "open"));
-		accountData.add(new Account(3, "savings", 10.99, "u2 retirement", "open"));
-	}
+	private static final String url = "jdbc:postgresql://p0-bank-database.cijrbngpbjo5.us-east-2.rds.amazonaws.com:5432/postgres";
+	private static final String un = "postgres";
+	private static final String pass = "postgres";
 	
 	public static boolean createAccount(Account account) {
-		return true;
-	}
-	
-	public static Account getAccountById(int id){
-		for(Account a : accountData) {
-			if(a.getAccountID() == id) {
-				return a;
-			}
+		String command = "INSERT INTO accounts (type, balance, name, state) VALUES ('"+account.getType()+"', "+account.getBalance()+", '"+account.getName()+"', '"+account.getState()+"');";
+		
+		try(Connection connection = DriverManager.getConnection(url, un, pass);){
+			connection.createStatement().execute(command);
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+			return false;
 		}
-		return null;
+		
+		return true;
 	}
 	
 	public static boolean deleteAccount(int accountID) {
-		for(int a = 0; a < accountData.size(); a ++) {
-			if(accountData.get(a).getAccountID() == accountID) {
-				accountData.remove(a);
-				//Delete all accountHolders that correspond to this account
-				for(int b = 0; b < AccountHolderDao.accountHolderData.size(); b ++) {
-					AccountHolder ah = AccountHolderDao.accountHolderData.get(b);
-					if(ah.getAccountID() == accountID) {
-						AccountHolderDao.accountHolderData.remove(b);
-					}
-				}
-				return true;
-			}
+		String command = "DELETE FROM accounts WHERE accountID = "+accountID+";";
+		
+		try(Connection connection = DriverManager.getConnection(url, un, pass);){
+			connection.createStatement().execute(command);
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+			return false;
 		}
-		return false;
-	}
-	public static boolean updateAccount(int accountID, Account newAccount) {
-		//Update all information on this record to match newAccount
+		
 		return true;
 	}
-	public static boolean renameAccount(int accountID, String newName) {
-		for(Account a : accountData) {
-			if(a.getAccountID() == accountID) {
-				a.setName(newName);
-				return true;
-			}
+	public static boolean updateAccount(int accountID, Account newAccount) {
+		String command = "UPDATE accounts SET type='"+newAccount.getType()+"', balance="+newAccount.getBalance()+", name='"+newAccount.getName()+"', state='"+newAccount.getState()+"' WHERE accountID = "+accountID+";";
+
+		try(Connection connection = DriverManager.getConnection(url, un, pass);){
+			connection.createStatement().execute(command);
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+			return false;
 		}
-		return false;
+		
+		return true;
 	}
 	public static List<Account> getPendingAccounts(){
-		return null;
-	}
-	public static void depositAll(double amount) {
+		String command = "SELECT * FROM accounts WHERE state = 'pending'";
+		List<Account> ret = new LinkedList<>();
 		
+		try(Connection connection = DriverManager.getConnection(url, un, pass);
+			Statement statement = connection.createStatement();
+		    ResultSet set = statement.executeQuery(command);
+			){
+				while(set.next()) {
+					ret.add(new Account(set.getInt(1), set.getString(2), set.getDouble(3), set.getString(4), set.getString(5)));
+				}
+			} catch (SQLException e1) {
+				return null;
+			}
+		
+		return ret;
+	}
+	public static boolean depositAll(double amount) {
+		String command = "UPDATE accounts SET balance = balance + "+amount+";";
+		
+		try(Connection connection = DriverManager.getConnection(url, un, pass);){
+			connection.createStatement().execute(command);
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 }

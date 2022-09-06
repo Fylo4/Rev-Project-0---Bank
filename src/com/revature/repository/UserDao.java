@@ -74,7 +74,7 @@ public class UserDao {
 			return false;
 		}
 		
-		return false;
+		return true;
 	}
 	public static boolean usernameAvailable(String username) {
 		try(Connection connection = DriverManager.getConnection(url, un, pass);
