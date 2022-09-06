@@ -47,5 +47,45 @@ class UserDaoTest {
 		
 		assert(UserDao.deleteUser(user3));
 	}
+	
+	@Test
+	void getUserFailTest() {
+		User newUser = UserDao.getUser("nonexistentUN", "badPW");
+		assertEquals(newUser, null);
+	}
+	
+	@Test
+	void usernameAvailableTest(){
+		assert(UserDao.usernameAvailable("NonexistentUsername"));
+	}
+	
+	@Test
+	void usernameNotAvailableTest() {
+		assert(!UserDao.usernameAvailable("user1"));
+	}
+	
+	@Test
+	void findByNameTest() {
+		User newUser = UserDao.findByName("Alice", "Abram");
+		assert(newUser != null);
+	}
+	
+	@Test
+	void findByNameFailTest() {
+		User newUser = UserDao.findByName("badname", "wronglast");
+		assert(newUser == null);
+	}
+	
+	@Test
+	void findByIdTest() {
+		User newUser = UserDao.findByID(1);
+		assert(newUser.getFirstname().equals("Alice"));
+	}
+	
+	@Test
+	void findByIdFailTest() {
+		User newUser = UserDao.findByID(-1);
+		assert(newUser == null);
+	}
 
 }
