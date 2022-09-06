@@ -17,6 +17,10 @@ public class AccountDao {
 		accountData.add(new Account(3, "savings", 10.99, "u2 retirement", "open"));
 	}
 	
+	public static boolean createAccount(Account account) {
+		return true;
+	}
+	
 	public static Account getAccountById(int id){
 		for(Account a : accountData) {
 			if(a.getAccountID() == id) {

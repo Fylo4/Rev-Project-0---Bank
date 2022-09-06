@@ -483,7 +483,6 @@ public class Controller {
 	}
 	private static void deposit() {
 		List<Account> allAccounts = AccountHolderDao.getAccountsByUser(loggedUser.getUserID());
-		System.out.println("Deposit");
 		System.out.println("Select which account to deposit into:");
 		int index = 1;
 		for(Account a : allAccounts) {
@@ -494,12 +493,12 @@ public class Controller {
 		System.out.println("How much money to deposit? ");
 		double amount = getDouble(0.01, Double.MAX_VALUE);
 		allAccounts.get(selection-1).changeBalance(amount);
+		AccountDao.updateAccount(allAccounts.get(selection-1).getAccountID(), allAccounts.get(selection-1));
 		System.out.println("Deposit successful");
 		userMenu();
 	}
 	private static void withdraw() {
 		List<Account> allAccounts = AccountHolderDao.getAccountsByUser(loggedUser.getUserID());
-		System.out.println("Withdraw");
 		System.out.println("Select which account to withdraw from:");
 		int index = 1;
 		for(Account a : allAccounts) {
@@ -510,6 +509,7 @@ public class Controller {
 		System.out.println("How much money to withdraw? ");
 		double amount = getDouble(0.01, allAccounts.get(selection-1).getBalance());
 		allAccounts.get(selection-1).changeBalance(-amount);
+		AccountDao.updateAccount(allAccounts.get(selection-1).getAccountID(), allAccounts.get(selection-1));
 		System.out.println("Withdraw successful");
 		userMenu();
 	}
@@ -529,7 +529,9 @@ public class Controller {
 		System.out.println("Amount of money to transfer: ");
 		double amount = getDouble(0.01, allAccounts.get(acc_from-1).getBalance());
 		allAccounts.get(acc_from-1).changeBalance(-amount);
-		allAccounts.get(acc_to-11).changeBalance(amount);
+		allAccounts.get(acc_to-1).changeBalance(amount);
+		AccountDao.updateAccount(allAccounts.get(acc_from-1).getAccountID(), allAccounts.get(acc_from-1));
+		AccountDao.updateAccount(allAccounts.get(acc_to-1).getAccountID(), allAccounts.get(acc_to-1));
 		System.out.println("Transfer successful");
 		userMenu();
 	}
@@ -556,10 +558,22 @@ public class Controller {
 		}
 	}
 	private static void openAccount() {
-		
+		System.out.println("Select account type:");
+		System.out.println("1) checking");
+		System.out.println("2) savings");
+		int selection = getInt(1, 2);
+		System.out.println("Account name: ");
+		String name = scanner.nextLine();
+		boolean success = AccountDao.createAccount(new Account(0, (selection==1)?"checking":"savings", 0, name, "pending"));
+		if(success)
+			System.out.println("Account created successfully. A bank employee will approve or deny your account soon.");
+		else
+			System.out.println("Failed to create account");
+		userMenu();
 	}
 	private static void joinAccount(){
-		
+		System.out.println("This feature is not available yet");
+		userMenu();
 	}
 	private static void renameAccount() {
 		List<Account> allAccounts = AccountHolderDao.getAccountsByUser(loggedUser.getUserID());
@@ -577,8 +591,14 @@ public class Controller {
 		}else {
 			System.out.println("Rename to: ");
 			String newName = scanner.nextLine();
-			AccountDao.renameAccount(allAccounts.get(selection-1).getAccountID(), newName);
+			if(AccountDao.renameAccount(allAccounts.get(selection-1).getAccountID(), newName)) {
+				System.out.println("Rename successful");
+			}
+			else {
+				System.out.println("Rename failed");
+			}
 		}
+		userMenu();
 	}
 	private static void deleteAccount() {
 		List<Account> allAccounts = AccountHolderDao.getAccountsByUser(loggedUser.getUserID());
