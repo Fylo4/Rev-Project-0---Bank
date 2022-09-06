@@ -564,7 +564,7 @@ public class Controller {
 		int selection = getInt(1, 2);
 		System.out.println("Account name: ");
 		String name = scanner.nextLine();
-		boolean success = AccountDao.createAccount(new Account(0, (selection==1)?"checking":"savings", 0, name, "pending"));
+		boolean success = AccountDao.createAccount(new Account(0, (selection==1)?"checking":"savings", 0, name, "pending"), loggedUser.getUserID());
 		if(success)
 			System.out.println("Account created successfully. A bank employee will approve or deny your account soon.");
 		else

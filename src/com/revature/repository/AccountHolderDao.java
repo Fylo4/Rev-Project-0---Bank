@@ -29,4 +29,16 @@ public class AccountHolderDao {
 		}
 		return ret;
 	}
+	public static boolean createHolder(int accountID, int userID) {
+		String command = "INSERT INTO accountHolders VALUES ("+accountID+", "+userID+");";
+
+		try(Connection connection = DriverManager.getConnection(url, username, password);){
+			connection.createStatement().execute(command);
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+			return false;
+		}
+		
+		return true;
+	}
 }

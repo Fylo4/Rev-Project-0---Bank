@@ -14,14 +14,39 @@ public class AccountDao {
 	private static final String url = "jdbc:postgresql://p0-bank-database.cijrbngpbjo5.us-east-2.rds.amazonaws.com:5432/postgres";
 	private static final String un = "postgres";
 	private static final String pass = "postgres";
+
 	
-	public static boolean createAccount(Account account) {
+	public static boolean createAccount(Account account, int userID) {
 		String command = "INSERT INTO accounts (type, balance, name, state) VALUES ('"+account.getType()+"', "+account.getBalance()+", '"+account.getName()+"', '"+account.getState()+"');";
+
+		int current_account_id = -1;
+		try(Connection connection = DriverManager.getConnection(url, un, pass);){
+			connection.createStatement().execute(command);
+
+		    ResultSet set = connection.createStatement().executeQuery("select currval(pg_get_serial_sequence('accounts', 'accountid'));");
+			if(set.next()) {
+				current_account_id = set.getInt(1);
+			}
+			
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+			System.out.println("Failed to add account");
+			return false;
+		}
 		
+		//Make sure we got an account number
+		if(current_account_id < 0) {
+			System.out.println("Account number invalid");
+			return false;
+		}
+		
+		//Now add the bridge between account and user
+		command = "INSERT INTO accountHolders VALUES ("+current_account_id+", "+userID+");";
 		try(Connection connection = DriverManager.getConnection(url, un, pass);){
 			connection.createStatement().execute(command);
 		} catch (SQLException e1) {
 			e1.printStackTrace();
+			System.out.println("Failed to link account");
 			return false;
 		}
 		
