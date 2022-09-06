@@ -52,18 +52,41 @@ public class UserDao {
 		
 		return true;
 	}
-	public static User updateUser(int userID, User updatedUser) {
-		return null;
+	public static boolean updateUser(int userID, User updatedUser) {
+		String command = "UPDATE users SET firstname = '" + updatedUser.getFirstname() + "', lastname = '" + updatedUser.getLastname() + "', username = '"+updatedUser.getUsername()+"', password = '"+updatedUser.getPassword()+"', SSN = "+updatedUser.getSSN()+" WHERE userID = "+userID+";";
+		
+		try(Connection connection = DriverManager.getConnection(url, un, pass);){
+			connection.createStatement().execute(command);
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+			return false;
+		}
+		
+		return true;
 	}
 	public static boolean deleteUser(User deletedUser) {
+		String command = "DELETE FROM users WHERE userID = "+deletedUser.getUserID()+";";
+		
+		try(Connection connection = DriverManager.getConnection(url, un, pass);){
+			connection.createStatement().execute(command);
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+			return false;
+		}
+		
 		return false;
 	}
 	public static boolean usernameAvailable(String username) {
-		/*for(User u : userData) {
-			if(u.getUsername().equals(username)) {
+		try(Connection connection = DriverManager.getConnection(url, un, pass);
+				Statement statement = connection.createStatement();
+			    ResultSet set = statement.executeQuery("SELECT * FROM users WHERE username = '"+username+"';");
+			){
+				if(set != null && set.next()) {
+					return false;
+				}
+			} catch (SQLException e1) {
 				return false;
 			}
-		}*/
 		return true;
 	}
 	public static User findByName(String fname, String lname) {

@@ -130,7 +130,7 @@ public class Controller {
 		if(loggedEmployee.isAdmin()) {
 			System.out.println("5) Actions on all accounts");
 		}
-		int selection = getInt(1, loggedEmployee.isAdmin()?4:3);
+		int selection = getInt(1, loggedEmployee.isAdmin()?5:4);
 		switch(selection) {
 		case 1:
 			userMenu();
@@ -352,6 +352,7 @@ public class Controller {
 			}
 			break;
 		}
+		manageUsers2(user);
 	}
 	private static void managePending() {
 		//Open or close pending accounts and accountHolders
@@ -359,7 +360,7 @@ public class Controller {
 		System.out.println("1) Pending new accounts");
 		System.out.println("2) Pending joint account connections");
 		System.out.println("3) Return");
-		int selection = getInt(1, 2);
+		int selection = getInt(1, 3);
 		switch(selection) {
 		case 1:
 			pendingAccounts();
@@ -408,7 +409,6 @@ public class Controller {
 		AccountDao.depositAll(amount);
 		employeeMenu();
 	}
-
 
 	private static void userMenu() {
 		boolean isEmployee = (loggedEmployee != null && loggedEmployee.getUserID() == loggedUser.getUserID());
