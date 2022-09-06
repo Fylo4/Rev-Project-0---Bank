@@ -51,8 +51,17 @@ public class AccountDao {
 	}
 	
 	public static boolean deleteAccount(int accountID) {
-		String command = "DELETE FROM accounts WHERE accountID = "+accountID+";";
+		//First delete any account bridges that lead to this
+		String command = "DELETE FROM accountHolders WHERE accountID = "+accountID+";";
+		try(Connection connection = DriverManager.getConnection(url, un, pass);){
+			connection.createStatement().execute(command);
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+			return false;
+		}
 		
+		//Then delete the account itself
+		command = "DELETE FROM accounts WHERE accountID = "+accountID+";";
 		try(Connection connection = DriverManager.getConnection(url, un, pass);){
 			connection.createStatement().execute(command);
 		} catch (SQLException e1) {
