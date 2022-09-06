@@ -27,7 +27,6 @@ public class AccountHolderDao {
 	}
 	
 	public static List<Account> getAccountsByUser(int userID){
-		
 		List<Account> ret = new LinkedList<>();
 		
 		try(Connection connection = DriverManager.getConnection(url, username, password);

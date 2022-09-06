@@ -55,4 +55,10 @@ public class AccountDao {
 		}
 		return false;
 	}
+	public static List<Account> getPendingAccounts(){
+		return null;
+	}
+	public static void depositAll(double amount) {
+		
+	}
 }

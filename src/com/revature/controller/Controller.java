@@ -6,6 +6,7 @@ import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 import com.revature.models.Account;
+import com.revature.models.AccountHolder;
 import com.revature.models.Employee;
 import com.revature.models.User;
 import com.revature.repository.AccountDao;
@@ -124,7 +125,7 @@ public class Controller {
 		System.out.println("Please select from the following options:");
 		System.out.println("1) Your customer menu");
 		System.out.println("2) Manage users");
-		System.out.println("3) Manage pending users/accounts");
+		System.out.println("3) Manage pending accounts");
 		System.out.println("4) Log out");
 		if(loggedEmployee.isAdmin()) {
 			System.out.println("5) Actions on all accounts");
@@ -138,7 +139,7 @@ public class Controller {
 			manageUsers();
 			break;
 		case 3:
-			managePending();
+			pendingAccounts();
 			break;
 		case 4:
 			logout();
@@ -354,9 +355,58 @@ public class Controller {
 	}
 	private static void managePending() {
 		//Open or close pending accounts and accountHolders
+		//Actually I don't need to manage pending holders, so this menu never shows up
+		System.out.println("1) Pending new accounts");
+		System.out.println("2) Pending joint account connections");
+		System.out.println("3) Return");
+		int selection = getInt(1, 2);
+		switch(selection) {
+		case 1:
+			pendingAccounts();
+			break;
+		case 2:
+			//pendingHolders();
+			break;
+		case 3:
+			employeeMenu();
+			break;
+		}
+	}
+	private static void pendingAccounts() {
+		List<Account> pending = AccountDao.getPendingAccounts();
+		if(pending != null) {
+			System.out.println("0) Return");
+			for(int a = 0; a < pending.size(); a ++) {
+				System.out.println((a+1)+") Account #"+pending.get(a).getAccountID()+" - "+pending.get(a).getName());
+			}
+			int selection = getInt(0, pending.size());
+			if(selection == 0) {
+				employeeMenu();
+			}
+			else {
+				System.out.println("1) Set to open");
+				System.out.println("2) Set to closed");
+				int selection2 = getInt(1, 2);
+				pending.get(selection-1).setState((selection2==1)?"open":"closed");
+				AccountDao.updateAccount(pending.get(selection-1).getAccountID(), pending.get(selection-1));
+			}
+			pendingAccounts();
+		}
+		else {
+			System.out.println("An error occurred while searching for pending accounts");
+			employeeMenu();
+		}
 	}
 	private static void allAccounts() {
-		
+		System.out.println("1) Deposit to all accounts");
+		System.out.println("2) Withdraw from all accounts");
+		int selection = getInt(1, 2);
+		System.out.println("Amount: ");
+		double amount = getDouble(0, Double.MAX_VALUE);
+		if(selection == 2)
+			amount *= -1;
+		AccountDao.depositAll(amount);
+		employeeMenu();
 	}
 
 
