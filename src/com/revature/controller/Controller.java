@@ -119,7 +119,6 @@ public class Controller {
 			login();
 		}
 	}
-
 	private static void employeeMenu() {
 		System.out.println("Employee Menu");
 		System.out.println("Please select from the following options:");
@@ -195,10 +194,166 @@ public class Controller {
 		}
 	}
 	private static void manageUsers2(User user) {
-		 
+		System.out.println("1) View accounts");
+		System.out.println("2) View profile info");
+		System.out.println("3) Return");
+		if(loggedEmployee.isAdmin()) {
+			System.out.println("4) Change account details");
+			System.out.println("5) Change profile details");
+		}
+
+		int selection = getInt(1, loggedEmployee.isAdmin()?5:3);
+		switch(selection) {
+		case 1:
+			viewUserAccounts(user);
+			break;
+		case 2:
+			viewUserProfile(user);
+			break;
+		case 3:
+			manageUsers();
+			break;
+		case 4:
+			changeUserAccount(user);
+			break;
+		case 5:
+			changeUserProfile(user);
+			break;
+		}
+	}
+	private static void viewUserAccounts(User user) {
+		System.out.println("Displaying all account details:");
+		boolean accountsFound = false;
+		for(Account a : AccountHolderDao.getAccountsByUser(user.getUserID())) {
+			System.out.println("Name: "+a.getName() + " Type: "+a.getType()+" Balance: $"+df.format(a.getBalance())+" State: "+a.getState());
+			accountsFound = true;
+		}
+		if(!accountsFound) {
+			System.out.println("No accounts found in this profile");
+		}
+		manageUsers2(user);
+	}
+	private static void viewUserProfile(User user) {
+		System.out.println("UserID: "+user.getUserID());
+		System.out.println("Name: "+user.getFirstname()+" "+user.getLastname());
+		System.out.println("Username: "+user.getUsername());
+		System.out.println("Show sensitive information? (y/n) ");
+		String answer = scanner.nextLine();
+		if(answer.equals("y") || answer.equals("Y") || answer.equals("yes") || answer.equals("Yes")) {
+			System.out.println("Password: "+user.getPassword());
+			System.out.println("SSN: "+user.getSSN());
+		}
+		manageUsers2(user);
+	}
+	private static void changeUserAccount(User user) {
+		//Pick the account to modify
+		System.out.println("Select an account to modify:");
+		List<Account> myAccounts = AccountHolderDao.getAccountsByUser(user.getUserID());
+
+		for(int a = 0; a < myAccounts.size(); a ++) {
+			System.out.println((a+1)+") "+myAccounts.get(a).getName());
+		}
+		if(myAccounts.size() == 0) {
+			System.out.println("No accounts found in this profile");
+		}
+		int selection1 = getInt(1, myAccounts.size());
+		Account selectedAccount = myAccounts.get(selection1-1);
+		
+		//Pick the modification
+		System.out.println("How do you want to modify this account?");
+		System.out.println("1) Change type");
+		System.out.println("2) Change balance");
+		System.out.println("3) Change name");
+		System.out.println("4) Change state");
+		System.out.println("5) Delete");
+		int selection2 = getInt(1, 5);
+		
+		//Make the modification
+		switch(selection2) {
+		case 1:
+			System.out.println("1) Set to checking");
+			System.out.println("2) Set to savings");
+			int newType = getInt(1, 2);
+			selectedAccount.setType((newType==1)?"checking":"savings");
+			AccountDao.updateAccount(selectedAccount.getAccountID(), selectedAccount);
+			break;
+		case 2:
+			System.out.println("New balance: ");
+			double newBal = getDouble(0, Double.MAX_VALUE);
+			selectedAccount.setBalance(newBal);
+			AccountDao.updateAccount(selectedAccount.getAccountID(), selectedAccount);
+			break;
+		case 3:
+			System.out.println("New name: ");
+			String newName = scanner.nextLine();
+			selectedAccount.setName(newName);
+			AccountDao.updateAccount(selectedAccount.getAccountID(), selectedAccount);
+			break;
+		case 4:
+			System.out.println("1) Set to open");
+			System.out.println("2) Set to closed");
+			int newState = getInt(1, 2);
+			selectedAccount.setState((newState == 1)?"open":"closed");
+			AccountDao.updateAccount(selectedAccount.getAccountID(), selectedAccount);
+			break;
+		case 5:
+			System.out.println("Type 'delete' to verify deletion: ");
+			String input = scanner.nextLine();
+			if(input.equals("delete")) {
+				AccountDao.deleteAccount(selectedAccount.getAccountID());
+			}
+			break;
+		}
+		manageUsers2(user);
+	}
+	private static void changeUserProfile(User user) {
+		System.out.println("How do you want to modify this profile?");
+		System.out.println("1) Change name");
+		System.out.println("2) Change username");
+		System.out.println("3) Change password");
+		System.out.println("4) Change SSN");
+		System.out.println("5) Delete");
+		int selection = getInt(1, 5);
+		
+		switch(selection) {
+		case 1:
+			System.out.println("New first name: ");
+			String fname = scanner.nextLine();
+			System.out.println("New last name: ");
+			String lname = scanner.nextLine();
+			user.setFirstname(fname);
+			user.setLastname(lname);
+			UserDao.updateUser(user.getUserID(), user);
+			break;
+		case 2:
+			System.out.println("New username: ");
+			String uname = scanner.nextLine();
+			user.setUsername(uname);
+			UserDao.updateUser(user.getUserID(), user);
+			break;
+		case 3:
+			System.out.println("New password: ");
+			String password = scanner.nextLine();
+			user.setPassword(password);
+			UserDao.updateUser(user.getUserID(), user);
+			break;
+		case 4:
+			System.out.println("New SSN: ");
+			int ssn = getInt(0, 999_99_9999);
+			user.setSSN(ssn);
+			UserDao.updateUser(user.getUserID(), user);
+			break;
+		case 5:
+			System.out.println("Type 'delete' to confirm deletion: ");
+			String input = scanner.nextLine();
+			if(input.equals("delete")) {
+				UserDao.deleteUser(user);
+			}
+			break;
+		}
 	}
 	private static void managePending() {
-		
+		//Open or close pending accounts and accountHolders
 	}
 	private static void allAccounts() {
 		
@@ -359,7 +514,7 @@ public class Controller {
 	private static void renameAccount() {
 		List<Account> allAccounts = AccountHolderDao.getAccountsByUser(loggedUser.getUserID());
 		System.out.println("Rename Account");
-		System.out.println("Select which account to delete:");
+		System.out.println("Select which account to rename:");
 		System.out.println("0) Exit without renaming");
 		int index = 1;
 		for(Account a : allAccounts) {

@@ -52,7 +52,7 @@ public class UserDao {
 		
 		return true;
 	}
-	public static User updateUser(User updatedUser) {
+	public static User updateUser(int userID, User updatedUser) {
 		return null;
 	}
 	public static boolean deleteUser(User deletedUser) {

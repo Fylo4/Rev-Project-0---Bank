@@ -42,6 +42,10 @@ public class AccountDao {
 		}
 		return false;
 	}
+	public static boolean updateAccount(int accountID, Account newAccount) {
+		//Update all information on this record to match newAccount
+		return true;
+	}
 	public static boolean renameAccount(int accountID, String newName) {
 		for(Account a : accountData) {
 			if(a.getAccountID() == accountID) {
