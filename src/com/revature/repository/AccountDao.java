@@ -30,13 +30,11 @@ public class AccountDao {
 			
 		} catch (SQLException e1) {
 			e1.printStackTrace();
-			System.out.println("Failed to add account");
 			return false;
 		}
 		
 		//Make sure we got an account number
 		if(current_account_id < 0) {
-			System.out.println("Account number invalid");
 			return false;
 		}
 		
@@ -46,7 +44,6 @@ public class AccountDao {
 			connection.createStatement().execute(command);
 		} catch (SQLException e1) {
 			e1.printStackTrace();
-			System.out.println("Failed to link account");
 			return false;
 		}
 		
